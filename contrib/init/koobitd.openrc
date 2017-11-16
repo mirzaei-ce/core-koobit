@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/koobit/.koobit" ]; then
+	KOOBITD_DEFAULT_DATADIR="/var/lib/koobit/.koobit"
+else
+	KOOBITD_DEFAULT_DATADIR="/var/lib/koobitd"
+fi
+
+KOOBITD_CONFIGFILE=${KOOBITD_CONFIGFILE:-/etc/koobit/koobit.conf}
+KOOBITD_PIDDIR=${KOOBITD_PIDDIR:-/var/run/koobitd}
+KOOBITD_PIDFILE=${KOOBITD_PIDFILE:-${KOOBITD_PIDDIR}/koobitd.pid}
+KOOBITD_DATADIR=${KOOBITD_DATADIR:-${KOOBITD_DEFAULT_DATADIR}}
+KOOBITD_USER=${KOOBITD_USER:-${KOOBIT_USER:-koobit}}
+KOOBITD_GROUP=${KOOBITD_GROUP:-koobit}
+KOOBITD_BIN=${KOOBITD_BIN:-/usr/bin/koobitd}
+KOOBITD_NICE=${KOOBITD_NICE:-${NICELEVEL:-0}}
+KOOBITD_OPTS="${KOOBITD_OPTS:-${KOOBIT_OPTS}}"
+
+name="Koobit Core Daemon"
+description="Koobit cryptocurrency P2P network daemon"
+
+command="/usr/bin/koobitd"
+command_args="-pid=\"${KOOBITD_PIDFILE}\" \
+		-conf=\"${KOOBITD_CONFIGFILE}\" \
+		-datadir=\"${KOOBITD_DATADIR}\" \
+		-daemon \
+		${KOOBITD_OPTS}"
+
+required_files="${KOOBITD_CONFIGFILE}"
+start_stop_daemon_args="-u ${KOOBITD_USER} \
+			-N ${KOOBITD_NICE} -w 2000"
+pidfile="${KOOBITD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${KOOBITD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${KOOBITD_USER}:${KOOBITD_GROUP}" \
+	"${KOOBITD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${KOOBITD_USER}:${KOOBITD_GROUP}" \
+	"${KOOBITD_PIDDIR}"
+
+	checkpath -f \
+	-o ${KOOBITD_USER}:${KOOBITD_GROUP} \
+	-m 0660 \
+	${KOOBITD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${KOOBITD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run koobitd."
+		eerror "The setting must appear in ${KOOBITD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Koobit Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

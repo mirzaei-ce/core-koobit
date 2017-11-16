@@ -1,0 +1,6 @@
+usr/local/bin/koobit-qt usr/bin
+share/pixmaps/koobit32.xpm usr/share/pixmaps
+share/pixmaps/koobit16.xpm usr/share/pixmaps
+share/pixmaps/koobit128.png usr/share/pixmaps
+debian/koobit-qt.desktop usr/share/applications
+debian/koobit-qt.protocol usr/share/kde4/services/

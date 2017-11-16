@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Koobit
+Comment=Koobit P2P Cryptocurrency
+Comment[fr]=Koobit, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Koobit, eşten eşe kriptografik sanal para birimi
+Exec=koobit-qt %u
+Terminal=false
+Type=Application
+Icon=koobit128
+MimeType=x-scheme-handler/koobit;
+Categories=Office;Finance;

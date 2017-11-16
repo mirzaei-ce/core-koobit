@@ -1,0 +1,33 @@
+# /etc/conf.d/koobitd: config file for /etc/init.d/koobitd
+
+# Config file location
+#KOOBITD_CONFIGFILE="/etc/koobit/koobit.conf"
+
+# What directory to write pidfile to?  (created and owned by $KOOBITD_USER)
+#KOOBITD_PIDDIR="/var/run/koobitd"
+
+# What filename to give the pidfile
+#KOOBITD_PIDFILE="${KOOBITD_PIDDIR}/koobitd.pid"
+
+# Where to write koobitd data (be mindful that the blockchain is large)
+#KOOBITD_DATADIR="/var/lib/koobitd"
+
+# User and group to own koobitd process
+#KOOBITD_USER="koobit"
+#KOOBITD_GROUP="koobit"
+
+# Path to koobitd executable
+#KOOBITD_BIN="/usr/bin/koobitd"
+
+# Nice value to run koobitd under
+#KOOBITD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+KOOBITD_OPTS="-disablewallet"
+
+# The timeout in seconds OpenRC will wait for koobitd to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+KOOBITD_SIGTERM_TIMEOUT=60

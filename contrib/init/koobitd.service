@@ -1,0 +1,22 @@
+[Unit]
+Description=Koobit's distributed currency daemon
+After=network.target
+
+[Service]
+User=koobit
+Group=koobit
+
+Type=forking
+PIDFile=/var/lib/koobitd/koobitd.pid
+ExecStart=/usr/bin/koobitd -daemon -pid=/var/lib/koobitd/koobitd.pid \
+-conf=/etc/koobit/koobit.conf -datadir=/var/lib/koobitd -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Protocol]
+exec=koobit-qt '%u'
+protocol=koobit
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false
